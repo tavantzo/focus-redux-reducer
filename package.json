@@ -1,6 +1,6 @@
 {
   "name": "focus-redux-reducer",
-  "version": "1.0.2-3",
+  "version": "1.0.2-2",
   "description": "A Redux reducer focused on productivity.",
   "readme": "./README.md",
   "main": "dist/index.js",
@@ -83,19 +83,6 @@
     ],
     "sourceMap": false,
     "instrument": false
-  },
-  "babel": {
-    "presets": [
-      "es2015",
-      "stage-2"
-    ],
-    "env": {
-      "test": {
-        "plugins": [
-          "istanbul"
-        ]
-      }
-    }
   },
   "directories": {
     "test": "test"
