@@ -18,7 +18,7 @@ export default class Reducer {
         this.state = INITIAL_STATE = initialState;
         const that = this;
 
-        return (state = INITIAL_STATE, { type, payload, ...action }) => {
+        return (state = initialState, { type, payload, ...action }) => {
             // update the inner state with the given state
             that.state = state;
 
@@ -33,7 +33,7 @@ export default class Reducer {
                 return that.updateState(method.call(that, payload, action));
             }
 
-            // Check if there is a default mothpd
+            // Check if there is a default method
             if (hasProto(that, 'default')) {
                 return that.updateState(that.default.call(that, payload, action));
             }
@@ -93,7 +93,7 @@ export default class Reducer {
      * Removes a property from the current state and return a new state.
      *
      * @param object The current state
-     * @param stirng The property name
+     * @param string The property name
      * @returns object A new state object
      * @memberof ReducerBase
      */
