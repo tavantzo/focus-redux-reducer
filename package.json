@@ -1,6 +1,6 @@
 {
   "name": "focus-redux-reducer",
-  "version": "2.0.0",
+  "version": "2.0.0-develop",
   "description": "A Redux reducer focused on productivity.",
   "readme": "./README.md",
   "main": "dist/index.js",
@@ -8,15 +8,17 @@
     "build": "rm -rf ./dist && tsc",
     "lint": "eslint ./src",
     "commit": "git-cz",
-    "test": "npm run lint && cross-env NODE_ENV=test nyc mocha --bail --recursive -R spec --compilers ts:ts-node/register,js:ts-node/register",
+    "test": "cross-env NODE_ENV=test nyc mocha --bail --recursive -R spec --compilers ts:ts-node/register,js:ts-node/register",
     "test:watch": "mocha -R spec --compilers js:ts-node/register,ts:ts-node/register -w",
     "check-coverage": "nyc check-coverage --statements 100 --branches 87 --functions 100 --lines 100",
-    "semantic-release": "semantic-release pre && npm run build && npm publish && semantic-release post",
-    "install": "npm run build"
+    "report-coverage": "cat ./coverage/lcov.info | codecov",
+    "semantic-release": "semantic-release",
+    "install": "npm run build",
+    "travis-deploy-once": "travis-deploy-once"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tavantzo/focus-redux-reducer.git"
+    "url": "https://github.com/tavantzo/focus-redux-reducer.git"
   },
   "keywords": [
     "reducer",
@@ -35,9 +37,12 @@
   },
   "homepage": "https://github.com/tavantzo/focus-redux-reducer#readme",
   "dependencies": {
+    "@types/react-redux": "^6.0.0",
     "redux": "^4.0.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.3",
+    "@types/mocha": "^5.2.0",
     "@types/react": "^16.3.14",
     "@types/redux": "^3.6.0",
     "awesome-typescript-loader": "^5.0.0",
@@ -53,8 +58,9 @@
     "nyc": "10.3.0",
     "react": "^15.6.1",
     "react-redux": "^5.0.6",
-    "semantic-release": "^8.0.4",
+    "semantic-release": "^15.4.0",
     "source-map-loader": "^0.2.3",
+    "travis-deploy-once": "^5.0.0",
     "ts-node": "^6.0.3",
     "typescript": "^2.8.3",
     "typescript-eslint-parser": "^15.0.0",
@@ -78,8 +84,14 @@
     ],
     "sourceMap": true,
     "instrument": true,
-    "extension": [ ".ts" ],
-    "include": [ "src/*.ts" ],
+    "extension": [
+      ".ts",
+      "*.js"
+    ],
+    "include": [
+      "src/*.ts",
+      "src/*.js"
+    ],
     "all": true
   },
   "eslintConfig": {
@@ -97,5 +109,6 @@
   },
   "directories": {
     "test": "test"
-  }
+  },
+  "release": {}
 }

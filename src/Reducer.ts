@@ -17,17 +17,16 @@ export interface Action<T = string, P = any> extends AnyAction {
  * @export
  * @class ReducerProvider
  */
-export default class ReducerFactory {
-    private constructor(private state: State) {
-    }
-
+export class ReducerFactory {
+    protected constructor(private state: State) {}
+     
     /**
      * Returns a Redux reducer compatible function to be attached at a Redux store
      *
      * @returns function
-     * @memberof ReducerBase
+     * @memberof ReducerFactory
      */
-    static Create(initialState:State = INITIAL_STATE): ReduxReducer<object, Action> {
+    static Create(initialState:State = INITIAL_STATE): ReduxReducer<State, Action> {
         const reducer: ReducerFactory = new this(initialState);
         
         return function(this:ReducerFactory, state: State = initialState, action: Action) {
@@ -62,9 +61,9 @@ export default class ReducerFactory {
      * Override to map actions with reducer methods.
      *
      * @returns object {ACTION_NAME: callable(state = [], payload, extra_params)}
-     * @memberof ReducerBase
+     * @memberof ReducerFactory
      */
-    mapActionToMethod() {
+    mapActionToMethod(): object {
         return {};
     }
 
@@ -75,9 +74,9 @@ export default class ReducerFactory {
      * @param string The property name to add/update
      * @param {any} The new value
      * @returns object A new state object
-     * @memberof ReducerBase
+     * @memberof ReducerFactory
      */
-    updateStateProp(attribute, value) {
+    updateStateProp(attribute: string, value: any): State {
         return this.updateState({ [attribute]: value });
     }
 
@@ -86,9 +85,9 @@ export default class ReducerFactory {
      *
      * @param object newProps
      * @returns object The new state
-     * @memberof ReducerBase
+     * @memberof ReducerFactory
      */
-    updateState(newProps) {
+    updateState(newProps: State): State {
         this.state = { ...this.state, ...newProps };
         return this.state;
     }
@@ -97,9 +96,9 @@ export default class ReducerFactory {
      * Returns a copy of the current state
      *
      * @returns object
-     * @memberof ReducerBase
+     * @memberof ReducerFactory
      */
-    currentStateCopy() {
+    currentStateCopy(): State {
         return { ...this.state };
     }
 
@@ -109,9 +108,9 @@ export default class ReducerFactory {
      * @param object The current state
      * @param string The property name
      * @returns object A new state object
-     * @memberof ReducerBase
+     * @memberof ReducerFactory
      */
-    removeStateProp(property) {
+    removeStateProp(property: string): State {
         delete this.state[property];
         return { ...this.state, ...INITIAL_STATE };
     }
@@ -119,12 +118,12 @@ export default class ReducerFactory {
 
 /* HELPERS */
 
-const methodExists = (object, name) => {
+const methodExists = (object: ReducerFactory, name: string): boolean => {
     return object.hasOwnProperty(name)
         && typeof object[name] === 'function';
 };
 
-const hasProto = (object, name) => {
+const hasProto = (object: ReducerFactory, name: string): boolean => {
     if (typeof name !== 'string' || (name.length === 0)) {
         throw new TypeError('Should `name` to be of type `string` and not empty `value`');
     }

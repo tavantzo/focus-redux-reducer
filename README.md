@@ -51,10 +51,9 @@ Also a special `default` method can be defined and will be called when the `acti
 
 **MyReducer.js**
 ```javascript
-import Reducer from 'flux-redux-reducer';
-import { createStore } from 'react-redux';
+import ReducerFactory,{ State, Action } from 'flux-redux-reducer';
 
-class MyReducer extends Reducer {
+class MyReducer extends ReducerFactory {
     // Mapping action types with instance methods
     mapActionToMethod() {
         return {
@@ -90,7 +89,7 @@ const initialState = {
     whatever: false
 };
 
-export default new MyReducer
+export default MyReducer.Create(initialState);
 ```
 
 **App,js**
@@ -116,8 +115,8 @@ store.dispatch({
 
 ### Method reference
 
-**Reducer.constructor**
-<p>This a special contructor, since it initialized the object but instead of returning the newly created instance it returns a reducer function. That function keeps a private reference of the object instance.</p>
+**ReducerFactory.Create**
+<p>Creates a redux reducer.</p>
 
 | argument     | type   | default | description |
 |:--------------|:------|:-------|:-----------|
@@ -125,16 +124,16 @@ store.dispatch({
 
 | returns                 |                          |
 |-------------------------|--------------------------|
-| function(state, action) | A redux reducer function |
+| Reducer<S = object, A = Action> | A redux reducer function |
 
-**Reducer.mapActionToMethod**
+**ReducerFactory.mapActionToMethod**
 <p>Returns an object that properties are action names/types, while the value is a callable. **Override** to map actions with reducer methods.</p>
 
 | returns        |                                   |
 |----------------|-----------------------------------|
 | object<*Action*:*callable(payload, ...args)>*        | An object with the mapped actions |
 
-**Reducer.updateStateProp**
+**ReducerFactory.updateStateProp**
 <p>A helper method that returns a new state</p>
 
 | argument      | type   | default | description                |
@@ -147,7 +146,7 @@ store.dispatch({
 | object         | The new state |
 
 
-**Reducer.updateState**
+**ReducerFactory.updateState**
 <p>Merges the current state with the given props and returns a fresh state object</p>
 
 | argument     | type   | default | description |
@@ -158,14 +157,14 @@ store.dispatch({
 |----------------|---------------|
 | object         | The new state |
 
-**Reducer.currentStateCopy**
+**ReducerFactory.currentStateCopy**
 <p>Returns a copy of the current state</p>
 
 | returns        |                     |
 |----------------|---------------------|
 | object         | A copy of the state |
 
-**Reducer.removeStateProp**
+**ReducerFactory.removeStateProp**
 <p>Removes a property from the current state and return a new state.</p>
 
 | argument      | type   | default | description                    |

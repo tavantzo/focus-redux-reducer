@@ -1,24 +1,24 @@
 language: node_js
 cache:
   directories:
-    - node_modules
-branches:
-  only:
-    - master
+    - ~/.npm
+    - ~/node_modules
 notifications:
   email: false
 node_js:
-  - '7'
-  - '6'
+  - '9'
+  - '8'
 before_script:
-  - npm prune
+  - yarn install
 script:
   - npm test
   - npm run check-coverage
   - npm run build
 after_success:
   - npm run report-coverage
-  - npm run semantic-release
+  - npm run travis-deploy-once "npm run semantic-release"
 branches:
+  only:
+    - next
   except:
     - /^v\d+\.\d+\.\d+$/
