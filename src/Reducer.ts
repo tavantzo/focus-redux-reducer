@@ -1,50 +1,64 @@
+import { Reducer as ReduxReducer, AnyAction } from "redux";
+
 let INITIAL_STATE = {};
+
+export interface State {
+    [props:string]: any
+}
+
+export interface Action<T = string, P = any> extends AnyAction {
+    payload: P;
+}
+
 /**
  * A base class for create class based reducers where methods are the action.type
  * to avoid the ugly looking switch block. Any reducer class must extemd tha class
  *
  * @export
- * @class ReducerBase
+ * @class ReducerProvider
  */
-export default class Reducer {
-    state = null;
+export default class ReducerFactory {
+    private constructor(private state: State) {
+    }
+
     /**
      * Returns a Redux reducer compatible function to be attached at a Redux store
      *
      * @returns function
      * @memberof ReducerBase
      */
-    constructor(initialState = INITIAL_STATE) {
-        this.state = INITIAL_STATE = initialState;
-        const that = this;
-
-        return (state = initialState, { type, payload, ...action }) => {
+    static Create(initialState:State = INITIAL_STATE): ReduxReducer<object, Action> {
+        const reducer: ReducerFactory = new this(initialState);
+        
+        return function(this:ReducerFactory, state: State = initialState, action: Action) {
+            const { type, payload, ...extraParams } = action;
             // update the inner state with the given state
-            that.state = state;
+            this.state = state;
 
             // Check if the object a method that matched the 'type' arguments
-            if (hasProto(that, type)) {
-                return that.updateState(that[type].call(that, payload, action));
+            if (hasProto(this, type)) {
+                return this.updateState(this[type].call(this, payload, extraParams));
             }
 
             // Check if there is a mapped type with a method
-            if (type in that.mapActionToMethod()) {
-                const method = that.mapActionToMethod()[type];
-                return that.updateState(method.call(that, payload, action));
+            if (type in this.mapActionToMethod()) {
+                const method = this.mapActionToMethod()[type];
+                return this.updateState(method.call(this, payload, extraParams));
             }
 
             // Check if there is a default method
-            if (hasProto(that, 'default')) {
-                return that.updateState(that.default.call(that, payload, action));
+            if (hasProto(this, 'default')) {
+                // @ts-ignore: Issue has handled by the check above 
+                return this.updateState(this.default.call(this, payload, extraParams));
             }
 
             // All checks failed, just return the state as is.
             return state;
-        };
+        }.bind(reducer);
     }
 
     /**
-     * Returns an object that properties are action names/types, while the value is a callable.
+     * Returns an object that propnaierties are action names/types, while the value is a callable.
      * Override to map actions with reducer methods.
      *
      * @returns object {ACTION_NAME: callable(state = [], payload, extra_params)}
@@ -111,11 +125,11 @@ const methodExists = (object, name) => {
 };
 
 const hasProto = (object, name) => {
-	if (typeof name !== 'string' || (name.length === 0)) {
-		throw new TypeError('Should `name` to be of type `string` and not empty `value`');
-	}
+    if (typeof name !== 'string' || (name.length === 0)) {
+        throw new TypeError('Should `name` to be of type `string` and not empty `value`');
+    }
 
-	if (typeof object === 'object') {
-		return methodExists(object.constructor.prototype, name);
-	}
+    if (typeof object === 'object') {
+        return methodExists(object.constructor.prototype, name);
+    }
 };

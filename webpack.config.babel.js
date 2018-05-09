@@ -1,6 +1,13 @@
 import { join } from 'path';
 
-const include = join(__dirname, 'src');
+const include = [
+    join(__dirname, 'src'),
+    join(__dirname, 'test')
+];
+const exclude = [
+    join(__dirname, 'node_modules'),
+    join(__dirname, 'dist')
+];
 
 export default {
     entry: './src/index',
@@ -12,8 +19,9 @@ export default {
     devtool: 'source-map',
     module: {
         loaders: [
-            { test: /\.js$/, loader: 'babel-loader', include},
-            { test: /\.json$/, loader: 'json-loader', include},
+            // Match js, ts, tsx and jsx files
+            { test: /\.(t|j)sx?$/, loader: ['awesome-typescript-loader?module=es6'], include, exclude},
+            { test: /\.js$/, loader: 'source-map-loader', enforce: 'pre', include},
         ]
     }
 }
