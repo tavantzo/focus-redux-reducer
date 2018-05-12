@@ -1,14 +1,17 @@
 {
     "compilerOptions": {
-        "declaration":false,
+        "declaration": true,
+        "strict": true,
         "outDir": "./dist",
-        "allowJs": true,
+        "allowJs": false,
         "checkJs": false,
         "module": "commonjs",
         "target": "es5",
         "jsx": "react",
         "moduleResolution": "node",
-        "lib": ["es2015", "dom" ]
+        "lib": ["es2015", "dom" ],
+        "noImplicitAny": false,
+        "sourceMap": true
     },
     "include": [
         "src"

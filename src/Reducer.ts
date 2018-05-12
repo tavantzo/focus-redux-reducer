@@ -7,7 +7,9 @@ export interface State {
 }
 
 export interface Action<T = string, P = any> extends AnyAction {
+    type: T;
     payload: P;
+    [extraParams:string]: any;
 }
 
 /**
@@ -18,18 +20,20 @@ export interface Action<T = string, P = any> extends AnyAction {
  * @class ReducerProvider
  */
 export class ReducerFactory {
+    [prop: string]: any;
+    
     protected constructor(private state: State) {}
-     
+    
     /**
      * Returns a Redux reducer compatible function to be attached at a Redux store
      *
      * @returns function
      * @memberof ReducerFactory
      */
-    static Create(initialState:State = INITIAL_STATE): ReduxReducer<State, Action> {
+    static Create(initialState:State = INITIAL_STATE): ReduxReducer<State, AnyAction> {
         const reducer: ReducerFactory = new this(initialState);
         
-        return function(this:ReducerFactory, state: State = initialState, action: Action) {
+        return function(this:ReducerFactory, state: State = initialState, action: Action): State {
             const { type, payload, ...extraParams } = action;
             // update the inner state with the given state
             this.state = state;
@@ -63,7 +67,7 @@ export class ReducerFactory {
      * @returns object {ACTION_NAME: callable(state = [], payload, extra_params)}
      * @memberof ReducerFactory
      */
-    mapActionToMethod(): object {
+    mapActionToMethod(): State {
         return {};
     }
 
@@ -128,7 +132,5 @@ const hasProto = (object: ReducerFactory, name: string): boolean => {
         throw new TypeError('Should `name` to be of type `string` and not empty `value`');
     }
 
-    if (typeof object === 'object') {
-        return methodExists(object.constructor.prototype, name);
-    }
+    return methodExists(object.constructor.prototype, name);
 };

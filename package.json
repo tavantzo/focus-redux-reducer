@@ -1,20 +1,21 @@
 {
   "name": "focus-redux-reducer",
-  "version": "2.0.0-develop",
+  "version": "2.0.0",
   "description": "A Redux reducer focused on productivity.",
   "readme": "./README.md",
   "main": "dist/index.js",
   "scripts": {
-    "build": "rm -rf ./dist && tsc",
+    "prebuild": "rm -rf ./dist",
+    "build": "npm-run-all --parallel build:*",
+    "build:main": "tsc",
+    "build:umd": "webpack --output-filename index.umd.js",
+    "build:umd.min": "webpack --output-filename index.umd.min.js -p",
     "lint": "eslint ./src",
     "commit": "git-cz",
-    "test": "cross-env NODE_ENV=test nyc mocha --bail --recursive -R spec --compilers ts:ts-node/register,js:ts-node/register",
+    "test": "cross-env NODE_ENV=test nyc mocha --bail -R spec --compilers ts:ts-node/register --recursive",
     "test:watch": "mocha -R spec --compilers js:ts-node/register,ts:ts-node/register -w",
     "check-coverage": "nyc check-coverage --statements 100 --branches 87 --functions 100 --lines 100",
-    "report-coverage": "cat ./coverage/lcov.info | codecov",
-    "semantic-release": "semantic-release",
-    "install": "npm run build",
-    "travis-deploy-once": "travis-deploy-once"
+    "report-coverage": "cat ./coverage/lcov.info | codecov"
   },
   "repository": {
     "type": "git",
@@ -28,7 +29,7 @@
   ],
   "files": [
     "dist",
-    "README.md "
+    "README.md"
   ],
   "author": "George Tavantzopoulos <g.tavantzopoulos@gmail.com>",
   "license": "MIT",
@@ -46,6 +47,8 @@
     "@types/react": "^16.3.14",
     "@types/redux": "^3.6.0",
     "awesome-typescript-loader": "^5.0.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
     "chai": "3.5.0",
     "codecov.io": "0.1.6",
     "commitizen": "2.9.6",
@@ -55,16 +58,16 @@
     "ghooks": "2.0.0",
     "json-loader": "0.5.4",
     "mocha": "3.3.0",
+    "npm-run-all": "^4.1.3",
     "nyc": "10.3.0",
     "react": "^15.6.1",
     "react-redux": "^5.0.6",
-    "semantic-release": "^15.4.0",
     "source-map-loader": "^0.2.3",
-    "travis-deploy-once": "^5.0.0",
     "ts-node": "^6.0.3",
     "typescript": "^2.8.3",
     "typescript-eslint-parser": "^15.0.0",
-    "webpack": "2.4.1"
+    "webpack": "stable",
+    "webpack-cli": "^2.1.3"
   },
   "config": {
     "ghooks": {
@@ -86,11 +89,10 @@
     "instrument": true,
     "extension": [
       ".ts",
-      "*.js"
+      ".js"
     ],
     "include": [
-      "src/*.ts",
-      "src/*.js"
+      "src/*.ts"
     ],
     "all": true
   },
@@ -109,6 +111,5 @@
   },
   "directories": {
     "test": "test"
-  },
-  "release": {}
+  }
 }
