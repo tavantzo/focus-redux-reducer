@@ -5,6 +5,5 @@
 node_modules
 npm-debug.log
 coverage
-dist
 .nyc_output
 yarn-error.log
