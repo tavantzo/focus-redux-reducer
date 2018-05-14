@@ -10,6 +10,7 @@ const exclude = [
 ];
 
 module.exports = {
+    mode: "none",
     entry: "./src/Reducer.ts",
     output: {
         path: join(__dirname, "dist"),
