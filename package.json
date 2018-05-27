@@ -4,7 +4,7 @@
   "description": "A Redux reducer focused on productivity.",
   "readme": "./README.md",
   "main": "./dist/index.js",
-  "tyoes": "./dist/index.d.ts",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "prebuild": "rm -rf ./dist",
     "build": "npm-run-all --parallel build:*",
@@ -39,7 +39,6 @@
   },
   "homepage": "https://github.com/tavantzo/focus-redux-reducer#readme",
   "dependencies": {
-    "@types/react-redux": "^6.0.0",
     "redux": "^4.0.0"
   },
   "devDependencies": {
@@ -47,6 +46,7 @@
     "@types/mocha": "^5.2.0",
     "@types/react": "^16.3.14",
     "@types/redux": "^3.6.0",
+    "@types/react-redux": "^6.0.0",
     "awesome-typescript-loader": "^5.0.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
