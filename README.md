@@ -51,7 +51,7 @@ Also a special `default` method can be defined and will be called when the `acti
 
 **MyReducer.js**
 ```javascript
-import Reducer from 'flux-redux-reducer';
+import Reducer from 'focus-redux-reducer';
 import { createStore } from 'react-redux';
 
 class MyReducer extends Reducer {
