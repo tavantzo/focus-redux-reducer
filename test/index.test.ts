@@ -1,6 +1,7 @@
-import { createStore, Reducer, Store } from 'redux';
+import { Action, ReducerFactory, State } from '../src/';
+import { Reducer, Store, createStore, combineReducers } from 'redux';
+
 import { expect } from 'chai';
-import { ReducerFactory, State, Action } from '../src/';
 
 const INITIAL_STATE: State = {
     fooAction: null,
@@ -38,8 +39,8 @@ class TestReducer extends ReducerFactory {
 
 describe('ReducerBase class tests', function() {
     describe('all', function() {
-        const reducer: Reducer = TestReducer.Create(INITIAL_STATE);
-        
+        const reducer: Reducer<State, Action> = TestReducer.Create(INITIAL_STATE);
+
         it('constructor should return a valid redux reducer.', () => {
             expect(reducer).not.to.be.instanceof(ReducerFactory);
             expect(reducer).not.to.be.instanceof(TestReducer);
@@ -47,6 +48,7 @@ describe('ReducerBase class tests', function() {
         it('execptions', () => {
             const errMsg = 'Should `name` to be of type `string` and not empty `value`';
             const testFunc = () => {
+                // @ts-ignore
                 reducer(INITIAL_STATE, { type: [ 'test' ], payload: null});
             };
             expect(testFunc.bind(reducer)).to.throw(TypeError);
@@ -54,13 +56,13 @@ describe('ReducerBase class tests', function() {
     });
 
     describe('action dispatching', function() {
-        const reducer: Reducer = TestReducer.Create(INITIAL_STATE);
+        const reducer: Reducer<State, Action> = TestReducer.Create(INITIAL_STATE);
         const store: Store = createStore(reducer);
 
         it('should be able to create a store', function() {
             expect(reducer).to.satisfy(createStore);
         });
-        
+
         it('should be a valid store object', function() {
             expect(store).not.be.instanceof(Function);
             expect(store).to.be.instanceof(Object);
@@ -99,11 +101,20 @@ describe('ReducerBase class tests', function() {
             expect(store.getState()).not.to.equal(INITIAL_STATE);
         });
         it('when no action type matched it just returns the current state', () => {
-            const reducer2: Reducer = ReducerFactory.Create(INITIAL_STATE);
+            const reducer2: Reducer<State, Action> = ReducerFactory.Create(INITIAL_STATE);
             const store2: Store = createStore(reducer2);
             const action: Action = { type: 'UNSUPPORTED', payload: true };
             store2.dispatch(action);
             expect(store2.getState()).to.deep.equal(INITIAL_STATE);
+        });
+        it('when store initialize the reducer with empty state', () => {
+            const state = { test: true };
+            const reducer2: Reducer<State, Action> = ReducerFactory.Create(state);
+            const store2: Store = createStore(combineReducers({reducer2}));
+            // @ts-ignore
+            const action: Action = { type: 'whatever', payload: { test: true }};
+            store2.dispatch(action);
+            expect(store2.getState().reducer2).to.deep.equal(state);
         });
     });
 });

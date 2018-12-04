@@ -1,9 +1,9 @@
-import { Reducer as ReduxReducer, AnyAction } from "redux";
+import { AnyAction, Reducer as ReduxReducer } from "redux";
 
 let INITIAL_STATE = {};
 
 export interface State {
-    [props:string]: any
+    [props:string]: any;
 }
 
 export interface Action<T = string, P = any> extends AnyAction {
@@ -19,24 +19,29 @@ export interface Action<T = string, P = any> extends AnyAction {
  * @export
  * @class ReducerProvider
  */
-export class ReducerFactory {
+export class ReducerFactory<S = State, A = Action>{
     [prop: string]: any;
-    
+
     protected constructor(private state: State) {}
-    
+
     /**
      * Returns a Redux reducer compatible function to be attached at a Redux store
      *
      * @returns function
      * @memberof ReducerFactory
      */
-    static Create(initialState:State = INITIAL_STATE): ReduxReducer<State, AnyAction> {
+    static Create(initialState: State): ReduxReducer<State, Action<string, any>> {
         const reducer: ReducerFactory = new this(initialState);
-        
-        return function(this:ReducerFactory, state: State = initialState, action: Action): State {
+
+        return function(this: ReducerFactory, state: State | {} = initialState, action: Action): State {
             const { type, payload, ...extraParams } = action;
-            // update the inner state with the given state
-            this.state = state;
+            // Check if the state is undefined
+            if (state === undefined) {
+                this.state = initialState;
+            } else {
+                // update the inner state with the given state
+                this.state = state;
+            }
 
             // Check if the object a method that matched the 'type' arguments
             if (hasProto(this, type)) {
@@ -51,7 +56,7 @@ export class ReducerFactory {
 
             // Check if there is a default method
             if (hasProto(this, 'default')) {
-                // @ts-ignore: Issue has handled by the check above 
+                // @ts-ignore: Issue has handled by the check above
                 return this.updateState(this.default.call(this, payload, extraParams));
             }
 

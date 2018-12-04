@@ -36,13 +36,18 @@ var ReducerFactory = /** @class */ (function () {
      * @memberof ReducerFactory
      */
     ReducerFactory.Create = function (initialState) {
-        if (initialState === void 0) { initialState = INITIAL_STATE; }
         var reducer = new this(initialState);
         return function (state, action) {
             if (state === void 0) { state = initialState; }
             var type = action.type, payload = action.payload, extraParams = __rest(action, ["type", "payload"]);
-            // update the inner state with the given state
-            this.state = state;
+            // Check if the state is undefined
+            if (state === undefined) {
+                this.state = initialState;
+            }
+            else {
+                // update the inner state with the given state
+                this.state = state;
+            }
             // Check if the object a method that matched the 'type' arguments
             if (hasProto(this, type)) {
                 return this.updateState(this[type].call(this, payload, extraParams));
@@ -54,7 +59,7 @@ var ReducerFactory = /** @class */ (function () {
             }
             // Check if there is a default method
             if (hasProto(this, 'default')) {
-                // @ts-ignore: Issue has handled by the check above 
+                // @ts-ignore: Issue has handled by the check above
                 return this.updateState(this.default.call(this, payload, extraParams));
             }
             // All checks failed, just return the state as is.

@@ -1,4 +1,4 @@
-import { Reducer as ReduxReducer, AnyAction } from "redux";
+import { AnyAction, Reducer as ReduxReducer } from "redux";
 export interface State {
     [props: string]: any;
 }
@@ -14,7 +14,7 @@ export interface Action<T = string, P = any> extends AnyAction {
  * @export
  * @class ReducerProvider
  */
-export declare class ReducerFactory {
+export declare class ReducerFactory<S = State, A = Action> {
     private state;
     [prop: string]: any;
     protected constructor(state: State);
@@ -24,7 +24,7 @@ export declare class ReducerFactory {
      * @returns function
      * @memberof ReducerFactory
      */
-    static Create(initialState?: State): ReduxReducer<State, AnyAction>;
+    static Create(initialState: State): ReduxReducer<State, Action<string, any>>;
     /**
      * Returns an object that propnaierties are action names/types, while the value is a callable.
      * Override to map actions with reducer methods.
