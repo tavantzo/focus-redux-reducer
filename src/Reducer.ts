@@ -35,13 +35,8 @@ export class ReducerFactory<S = State, A = Action>{
 
         return function(this: ReducerFactory, state: State | {} = initialState, action: Action): State {
             const { type, payload, ...extraParams } = action;
-            // Check if the state is undefined
-            if (state === undefined) {
-                this.state = initialState;
-            } else {
-                // update the inner state with the given state
-                this.state = state;
-            }
+            // update the inner state with the given state
+            this.state = state;
 
             // Check if the object a method that matched the 'type' arguments
             if (hasProto(this, type)) {

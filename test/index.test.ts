@@ -113,8 +113,11 @@ describe('ReducerBase class tests', function() {
             const store2: Store = createStore(combineReducers({reducer2}));
             // @ts-ignore
             const action: Action = { type: 'whatever', payload: { test: true }};
+            const newState = reducer2(undefined, action);
             store2.dispatch(action);
+            expect(newState).to.deep.equal(state);
             expect(store2.getState().reducer2).to.deep.equal(state);
+
         });
     });
 });
