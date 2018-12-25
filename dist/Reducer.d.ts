@@ -26,6 +26,10 @@ export declare class ReducerFactory<S = State, A = Action> {
      */
     static Create(initialState: State): ReduxReducer<State, Action<string, any>>;
     /**
+     * The redux initialise hook. This should return the initial state unmodified
+     */
+    ["@@INIT"](): State;
+    /**
      * Returns an object that propnaierties are action names/types, while the value is a callable.
      * Override to map actions with reducer methods.
      *

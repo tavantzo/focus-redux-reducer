@@ -1,3 +1,4 @@
+/*eslint no-undef: "off" */
 const { join } = require("path");
 
 const include = [

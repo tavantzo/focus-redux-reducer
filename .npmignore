@@ -1,1 +1,4 @@
 src/
+.travis.yml
+tsconfig.json
+.nojekyll

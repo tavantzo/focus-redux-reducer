@@ -38,10 +38,11 @@ var ReducerFactory = /** @class */ (function () {
     ReducerFactory.Create = function (initialState) {
         var reducer = new this(initialState);
         return function (state, action) {
-            if (state === void 0) { state = initialState; }
+            if (state === void 0) { state = {}; }
             var type = action.type, payload = action.payload, extraParams = __rest(action, ["type", "payload"]);
-            // update the inner state with the given state
-            this.state = state;
+            if (type === undefined) {
+                return this.state;
+            }
             // Check if the object a method that matched the 'type' arguments
             if (hasProto(this, type)) {
                 return this.updateState(this[type].call(this, payload, extraParams));
@@ -57,8 +58,14 @@ var ReducerFactory = /** @class */ (function () {
                 return this.updateState(this.default.call(this, payload, extraParams));
             }
             // All checks failed, just return the state as is.
-            return state;
+            return this.state;
         }.bind(reducer);
+    };
+    /**
+     * The redux initialise hook. This should return the initial state unmodified
+     */
+    ReducerFactory.prototype["@@INIT"] = function () {
+        return this.state;
     };
     /**
      * Returns an object that propnaierties are action names/types, while the value is a callable.

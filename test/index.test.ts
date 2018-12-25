@@ -68,6 +68,7 @@ describe('ReducerBase class tests', function() {
             expect(store).to.be.instanceof(Object);
         });
         it('should return the same state as the INITIAL_STATE', () => {
+            store.dispatch({type: '@@INIT'});
             expect(store.getState()).to.be.deep.equal(INITIAL_STATE);
         });
         it('if not action match the default method should be triggered', () => {
@@ -117,7 +118,6 @@ describe('ReducerBase class tests', function() {
             store2.dispatch(action);
             expect(newState).to.deep.equal(state);
             expect(store2.getState().reducer2).to.deep.equal(state);
-
         });
     });
 });

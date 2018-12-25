@@ -33,10 +33,12 @@ export class ReducerFactory<S = State, A = Action>{
     static Create(initialState: State): ReduxReducer<State, Action<string, any>> {
         const reducer: ReducerFactory = new this(initialState);
 
-        return function(this: ReducerFactory, state: State | {} = initialState, action: Action): State {
+        return function(this: ReducerFactory, state: State = {}, action: Action): State {
             const { type, payload, ...extraParams } = action;
-            // update the inner state with the given state
-            this.state = state;
+
+            if (type === undefined) {
+                return this.state;
+            }
 
             // Check if the object a method that matched the 'type' arguments
             if (hasProto(this, type)) {
@@ -56,8 +58,15 @@ export class ReducerFactory<S = State, A = Action>{
             }
 
             // All checks failed, just return the state as is.
-            return state;
+            return this.state;
         }.bind(reducer);
+    }
+
+    /**
+     * The redux initialise hook. This should return the initial state unmodified
+     */
+    ["@@INIT"] () {
+        return this.state;
     }
 
     /**

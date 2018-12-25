@@ -1,0 +1,398 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>focus-redux-reducer</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">focus-redux-reducer</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> focus-redux-reducer</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 id="focus-redux-reducer">focus-redux-reducer</h1>
+				<p><a href="https://travis-ci.org/tavantzo/focus-redux-reducer"><img src="https://img.shields.io/travis/tavantzo/focus-redux-reducer.svg" alt="Travis"></a>
+					<a href="https://codecov.io/gh/tavantzo/focus-redux-reducer"><img src="https://codecov.io/gh/tavantzo/focus-redux-reducer/branch/master/graph/badge.svg" alt="codecov"></a>
+					<a href="https://www.npmjs.com/package/focus-redux-reducer"><img src="https://img.shields.io/npm/v/focus-redux-reducer.svg" alt="version"></a>
+					<a href="https://www.npmjs.com/package/focus-redux-reducer"><img src="https://img.shields.io/npm/dm/focus-redux-reducer.svg" alt="downloads"></a>
+				<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/npm/l/focus-redux-reducer.svg" alt="MIT License"></a></p>
+				<h2 id="redux-reducer-focused-on-productivity">Redux reducer focused on productivity</h2>
+				<h3 id="description">Description</h3>
+				<p>A Redux reducer usually is a function (<code>function(Object state, Object action)</code>) that updates the state and returns it. Usually the main body of that function is an ugly <code>switch</code> statement or even worse a series of an un-maintainable <code>if...else</code> statements.</p>
+				<pre><code class="language-javascript"><span class="hljs-keyword">const</span> reducer = <span class="hljs-function">(<span class="hljs-params">state = {}, { type, payload, ...other }</span>) =&gt;</span> {
+    <span class="hljs-comment">// An ugly switch</span>
+    <span class="hljs-keyword">switch</span>(type) {
+        <span class="hljs-keyword">case</span> <span class="hljs-string">'some_type'</span>:
+            <span class="hljs-keyword">return</span> { ...state, <span class="hljs-attr">myProperty</span>: payload.someProperty };
+        <span class="hljs-keyword">case</span> <span class="hljs-string">'some_other_type'</span>:
+            <span class="hljs-keyword">return</span> { ...state, <span class="hljs-attr">myProperty</span>: payload.someProperty };
+        .....
+        case <span class="hljs-string">'some_other_type^N'</span>:
+            <span class="hljs-keyword">return</span> { ...state, <span class="hljs-attr">myProperty</span>: payload.someProperty };
+    }
+
+    <span class="hljs-keyword">return</span> state;
+};</code></pre>
+				<p>So when reducers have many actions can easily become un-maintainalbe and confusing, this can be error prone, since developers must rely on eslinter to detect the mess.</p>
+				<p>Instead of a <code>switch</code>, the <code>Reducer</code> class, maps the <code>action.type</code> with a class method, while it handles the state mutation using the returned object by the method. Also reducers can be re-usable classes.</p>
+				<h3 id="installation">Installation</h3>
+				<p>Installation is no different than any other `npm` package. Just execute the command bellow in a terminal, under the root directory of your project</p>
+				<pre><code class="language-bash">npm install --save focus-redux-reducer</code></pre>
+				<h3 id="basic-usage">Basic Usage</h3>
+				<p>Create a new class that extends the <code>Reducer</code> class and add your methods.</p>
+				<p>Methods can be mapped with a specific <code>action.type</code> by overridding the <code>Reducer.mapActionToMethod</code> method or the method name could exact match an <code>action.type</code>. That method should return an object, containing all the properties that should be updated. Return empty object if none should be updated.</p>
+				<p>Also a special <code>default</code> method can be defined and will be called when the <code>action.type</code> matches none of the methods or the mapped methods of the class.</p>
+				<h4 id="example">Example</h4>
+				<p><strong>MyReducer.js</strong></p>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> ReducerFactory,{ State, Action } <span class="hljs-keyword">from</span> <span class="hljs-string">'flux-redux-reducer'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyReducer</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ReducerFactory</span> </span>{
+    <span class="hljs-comment">// Mapping action types with instance methods</span>
+    mapActionToMethod() {
+        <span class="hljs-keyword">return</span> {
+            <span class="hljs-attr">SOME_ACTION_NAME</span>: <span class="hljs-keyword">this</span>.mappedMethod
+        };
+    }
+
+    <span class="hljs-comment">// Enter tour methods here</span>
+    mappedMethod(payload) {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.updateStateProp(<span class="hljs-string">'whatever'</span>, <span class="hljs-literal">true</span>);
+    }
+
+    fooMethod(payload, stuff) {
+        <span class="hljs-comment">// It's not necessary to manualy update the state or make a copy of it.</span>
+        <span class="hljs-comment">// Whaterver the method return it will update the state.</span>
+        <span class="hljs-keyword">return</span> { <span class="hljs-attr">foo</span>: payload, ...stuff };
+    }
+
+    <span class="hljs-comment">// The default function acts excactly as the `default` case of a `switch` block.</span>
+    <span class="hljs-keyword">default</span>(payload, { error }) {
+        <span class="hljs-comment">// if no  type matched and there is an error add return the error/</span>
+        <span class="hljs-keyword">if</span> (error !== <span class="hljs-literal">undefined</span>) {
+            <span class="hljs-keyword">return</span> { error };
+        }
+
+        <span class="hljs-comment">// Otherwise mutate nothing</span>
+        <span class="hljs-keyword">return</span> {};
+    }
+}
+
+<span class="hljs-keyword">const</span> initialState = {
+    <span class="hljs-attr">foo</span>: <span class="hljs-literal">null</span>;
+    whatever: <span class="hljs-literal">false</span>
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> MyReducer.Create(initialState);</code></pre>
+				<p><strong>App,js</strong></p>
+				<pre><code class="language-jsx"><span class="hljs-keyword">import</span> { createStore } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-redux'</span>;
+<span class="hljs-keyword">import</span> MyReducer <span class="hljs-keyword">from</span> <span class="hljs-string">'./path-to/MyReducer'</span>;
+
+<span class="hljs-keyword">const</span> store = createStore(MyReducer);
+
+store.dispatch({
+    <span class="hljs-attr">type</span>: <span class="hljs-string">'SOME_ACTION_NAME'</span>,
+    <span class="hljs-attr">payload</span>: <span class="hljs-literal">true</span>
+});
+
+store.dispatch({
+    <span class="hljs-attr">type</span>: <span class="hljs-string">'fooMethod'</span>,
+    <span class="hljs-attr">payload</span>: <span class="hljs-string">'Hello World!'</span>
+    stuff: {...}
+});
+</code></pre>
+				<h3 id="method-reference">Method reference</h3>
+				<p><strong>ReducerFactory.Create</strong></p>
+				<p>Creates a redux reducer.</p>
+				<table>
+					<thead>
+						<tr>
+							<th align="left">argument</th>
+							<th align="left">type</th>
+							<th align="left">default</th>
+							<th align="left">description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td align="left">initialState</td>
+							<td align="left">object</td>
+							<td align="left">{}</td>
+							<td align="left">The initial state object</td>
+						</tr>
+				</tbody></table>
+				<table>
+					<thead>
+						<tr>
+							<th>returns</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>Reducer&lt;S = object, A = Action&gt;</td>
+							<td>A redux reducer function</td>
+						</tr>
+				</tbody></table>
+				<p><strong>ReducerFactory.mapActionToMethod</strong></p>
+				<p>Returns an object that properties are action names/types, while the value is a callable. **Override** to map actions with reducer methods.</p>
+				<table>
+					<thead>
+						<tr>
+							<th>returns</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>object&lt;<em>Action</em>:<em>callable(payload, ...args)&gt;</em></td>
+							<td>An object with the mapped actions</td>
+						</tr>
+				</tbody></table>
+				<p><strong>ReducerFactory.updateStateProp</strong></p>
+				<p>A helper method that returns a new state</p>
+				<table>
+					<thead>
+						<tr>
+							<th align="left">argument</th>
+							<th align="left">type</th>
+							<th align="left">default</th>
+							<th align="left">description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td align="left">property</td>
+							<td align="left">string</td>
+							<td align="left">| A property name</td>
+							<td align="left"></td>
+						</tr>
+						<tr>
+							<td align="left">value</td>
+							<td align="left">mixed</td>
+							<td align="left">| The value of that property</td>
+							<td align="left"></td>
+						</tr>
+				</tbody></table>
+				<table>
+					<thead>
+						<tr>
+							<th>returns</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>object</td>
+							<td>The new state</td>
+						</tr>
+				</tbody></table>
+				<p><strong>ReducerFactory.updateState</strong></p>
+				<p>Merges the current state with the given props and returns a fresh state object</p>
+				<table>
+					<thead>
+						<tr>
+							<th align="left">argument</th>
+							<th align="left">type</th>
+							<th align="left">default</th>
+							<th align="left">description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td align="left">newProps</td>
+							<td align="left">object</td>
+							<td align="left">| An object with new properties name</td>
+							<td align="left"></td>
+						</tr>
+				</tbody></table>
+				<table>
+					<thead>
+						<tr>
+							<th>returns</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>object</td>
+							<td>The new state</td>
+						</tr>
+				</tbody></table>
+				<p><strong>ReducerFactory.currentStateCopy</strong></p>
+				<p>Returns a copy of the current state</p>
+				<table>
+					<thead>
+						<tr>
+							<th>returns</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>object</td>
+							<td>A copy of the state</td>
+						</tr>
+				</tbody></table>
+				<p><strong>ReducerFactory.removeStateProp</strong></p>
+				<p>Removes a property from the current state and return a new state.</p>
+				<table>
+					<thead>
+						<tr>
+							<th align="left">argument</th>
+							<th align="left">type</th>
+							<th align="left">default</th>
+							<th align="left">description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td align="left">property</td>
+							<td align="left">string</td>
+							<td align="left">| A property name to be removed</td>
+							<td align="left"></td>
+						</tr>
+				</tbody></table>
+				<table>
+					<thead>
+						<tr>
+							<th>returns</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>object</td>
+							<td>The new state</td>
+						</tr>
+				</tbody></table>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_reducer_.html">"<wbr>Reducer"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
