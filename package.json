@@ -1,6 +1,6 @@
 {
   "name": "focus-redux-reducer",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A Redux reducer focused on productivity.",
   "readme": "./README.md",
   "main": "./dist/index.js",
