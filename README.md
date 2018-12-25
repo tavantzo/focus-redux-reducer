@@ -51,7 +51,7 @@ Also a special `default` method can be defined and will be called when the `acti
 
 **MyReducer.js**
 ```javascript
-import ReducerFactory,{ State, Action } from 'flux-redux-reducer';
+import ReducerFactory,{ State, Action } from 'focus-redux-reducer';
 
 class MyReducer extends ReducerFactory {
     // Mapping action types with instance methods
