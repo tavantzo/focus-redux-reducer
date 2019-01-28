@@ -29,9 +29,9 @@ const reducer = (state = {}, { type, payload, ...other }) => {
     return state;
 };
 ```
-So when reducers have many actions can easily become un-maintainalbe and confusing, this can be error prone, since developers must rely on eslinter to detect the mess.
+So when reducers have many actions can easily become unmaintainable and confusing, this can be error prone, since developers must rely on es-linter to detect the mess.
 
-Instead of a `switch`, the `Reducer` class, maps the `action.type` with a class method, while it handles the state mutation using the returned object by the method. Also reducers can be re-usable classes.
+Instead of a `switch`, a `ReducerFactory` class, maps the `action.type` with a class method, while it handles the state mutation using the returned object by the method.
 
 ### Installation
 <p>Installation is no different than any other `npm` package. Just execute the command bellow in a terminal, under the root directory of your project</p>
@@ -41,9 +41,10 @@ npm install --save focus-redux-reducer
 ```
 
 ### Basic Usage
-Create a new class that extends the `Reducer` class and add your methods.
+Create a new class that extends the `ReducerFactory` class and add your methods.
 
-Methods can be mapped with a specific `action.type` by overridding the `Reducer.mapActionToMethod` method or the method name could exact match an `action.type`. That method should return an object, containing all the properties that should be updated. Return empty object if none should be updated.
+Methods can be mapped with a specific `action.type` by overriding the `ReducerFactory.mapActionToMethod` method or the method name could exact match an `action.type`. That method should return an object, containing all the properties that should be updated. Return empty object if there the state shouldn't be updated.
+Another way to map an `action.type`with a method is the of the the `forType` decorator
 
 Also a special `default` method can be defined and will be called when the `action.type` matches none of the methods or the mapped methods of the class.
 

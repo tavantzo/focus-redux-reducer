@@ -86,6 +86,7 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ReducerFactory", function() { return ReducerFactory; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "actionType", function() { return actionType; });
 var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
@@ -136,6 +137,11 @@ var ReducerFactory = /** @class */ (function () {
             // Check if there is a mapped type with a method
             if (type in this.mapActionToMethod()) {
                 var method = this.mapActionToMethod()[type];
+                return this.updateState(method.call(this, payload, extraParams));
+            }
+            // Check if there are decorated types
+            if (type in this.decMapToMethods) {
+                var method = this.decMapToMethods[type];
                 return this.updateState(method.call(this, payload, extraParams));
             }
             // Check if there is a default method
@@ -189,10 +195,10 @@ var ReducerFactory = /** @class */ (function () {
     };
     /**
      * Returns a copy of the current state
-     *
-     * @returns object
-     * @memberof ReducerFactory
-     */
+     *å
+        * @returns object
+        * @memberof ReducerFactory
+        */
     ReducerFactory.prototype.currentStateCopy = function () {
         return __assign({}, this.state);
     };
@@ -211,6 +217,27 @@ var ReducerFactory = /** @class */ (function () {
     return ReducerFactory;
 }());
 
+var decMapToMethods = {};
+ReducerFactory.prototype.decMapToMethods = decMapToMethods;
+/* DECORATORS */
+/**
+ * A Method decorator the to map action types with reducer methods.
+ *
+ * @param string[] types The action types that the decorated method should handle
+ * @returns MethodDecorator
+ */
+function actionType() {
+    var types = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        types[_i] = arguments[_i];
+    }
+    return function (target, method, descriptor) {
+        types.forEach(function (type) {
+            target.decMapToMethods[type] = target[method].bind(target);
+        });
+        return descriptor;
+    };
+}
 /* HELPERS */
 var methodExists = function (object, name) {
     return object.hasOwnProperty(name)

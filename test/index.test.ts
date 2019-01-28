@@ -1,10 +1,14 @@
-import { Action, ReducerFactory, State } from '../src/';
+import { State, Action, ReducerFactory, actionType } from '../src/';
 import { Reducer, Store, createStore, combineReducers } from 'redux';
 
 import { expect } from 'chai';
 
+const SOME_TYPE = "SOME_TYPE";
+const SOME_OTHER_TYPE = "SOME_OTHER_TYPE";
+
 const INITIAL_STATE: State = {
     fooAction: null,
+    decorated: null
 };
 
 class TestReducer extends ReducerFactory {
@@ -22,6 +26,11 @@ class TestReducer extends ReducerFactory {
         }
 
         return state;
+    }
+
+    @actionType(SOME_TYPE, SOME_OTHER_TYPE)
+    decoratedAction(text) {
+        return this.updateStateProp('decorated', text);
     }
 
     fooAction(text) {
@@ -71,6 +80,18 @@ describe('ReducerBase class tests', function() {
             store.dispatch({type: '@@INIT'});
             expect(store.getState()).to.be.deep.equal(INITIAL_STATE);
         });
+        it("should call decorated methods", () => {
+            const payload = "Hello decoratrors"
+            const payload2 = "Other decorator";
+            const action: Action  = { type: SOME_TYPE, payload };
+            const action2: Action = { type: SOME_OTHER_TYPE, payload: payload2 };
+
+            store.dispatch(action);
+            expect(store.getState()).not.to.deep.equal(INITIAL_STATE);
+            expect(store.getState()["decorated"]).to.be.equal(payload);
+            store.dispatch(action2);
+            expect(store.getState()["decorated"]).to.be.equal(payload2);
+        });
         it('if not action match the default method should be triggered', () => {
             const action: Action = { type: 'UNSUPPORTED', payload: true };
             store.dispatch(action);
@@ -80,7 +101,7 @@ describe('ReducerBase class tests', function() {
         it('remove a state prop', () => {
             const action: Action = { type: 'REMOVE_STATE_PROP', payload: 'default-has-been-trigered' };
             store.dispatch(action);
-            expect(store.getState()).to.deep.equal(INITIAL_STATE);
+
             expect(store.getState()['default-has-been-trigered']).to.be.undefined;
         });
         it('action dispacthing updates state', () => {

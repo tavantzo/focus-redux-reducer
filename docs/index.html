@@ -87,14 +87,15 @@
 
     <span class="hljs-keyword">return</span> state;
 };</code></pre>
-				<p>So when reducers have many actions can easily become un-maintainalbe and confusing, this can be error prone, since developers must rely on eslinter to detect the mess.</p>
-				<p>Instead of a <code>switch</code>, the <code>Reducer</code> class, maps the <code>action.type</code> with a class method, while it handles the state mutation using the returned object by the method. Also reducers can be re-usable classes.</p>
+				<p>So when reducers have many actions can easily become unmaintainable and confusing, this can be error prone, since developers must rely on es-linter to detect the mess.</p>
+				<p>Instead of a <code>switch</code>, a <code>ReducerFactory</code> class, maps the <code>action.type</code> with a class method, while it handles the state mutation using the returned object by the method.</p>
 				<h3 id="installation">Installation</h3>
 				<p>Installation is no different than any other `npm` package. Just execute the command bellow in a terminal, under the root directory of your project</p>
 				<pre><code class="language-bash">npm install --save focus-redux-reducer</code></pre>
 				<h3 id="basic-usage">Basic Usage</h3>
-				<p>Create a new class that extends the <code>Reducer</code> class and add your methods.</p>
-				<p>Methods can be mapped with a specific <code>action.type</code> by overridding the <code>Reducer.mapActionToMethod</code> method or the method name could exact match an <code>action.type</code>. That method should return an object, containing all the properties that should be updated. Return empty object if none should be updated.</p>
+				<p>Create a new class that extends the <code>ReducerFactory</code> class and add your methods.</p>
+				<p>Methods can be mapped with a specific <code>action.type</code> by overriding the <code>ReducerFactory.mapActionToMethod</code> method or the method name could exact match an <code>action.type</code>. That method should return an object, containing all the properties that should be updated. Return empty object if there the state shouldn&#39;t be updated.
+				Another way to map an <code>action.type</code>with a method is the of the the <code>forType</code> decorator</p>
 				<p>Also a special <code>default</code> method can be defined and will be called when the <code>action.type</code> matches none of the methods or the mapped methods of the class.</p>
 				<h4 id="example">Example</h4>
 				<p><strong>MyReducer.js</strong></p>

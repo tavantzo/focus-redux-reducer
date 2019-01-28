@@ -1,5 +1,7 @@
 {
     "compilerOptions": {
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
         "declaration": true,
         "strict": true,
         "outDir": "./dist",
@@ -9,7 +11,7 @@
         "target": "es5",
         "jsx": "react",
         "moduleResolution": "node",
-        "lib": ["es2015", "dom" ],
+        "lib": ["es6", "dom"],
         "noImplicitAny": false,
         "sourceMap": true
     },

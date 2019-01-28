@@ -57,10 +57,10 @@ export declare class ReducerFactory<S = State, A = Action> {
     updateState(newProps: State): State;
     /**
      * Returns a copy of the current state
-     *
-     * @returns object
-     * @memberof ReducerFactory
-     */
+     *å
+        * @returns object
+        * @memberof ReducerFactory
+        */
     currentStateCopy(): State;
     /**
      * Removes a property from the current state and return a new state.
@@ -72,3 +72,10 @@ export declare class ReducerFactory<S = State, A = Action> {
      */
     removeStateProp(property: string): State;
 }
+/**
+ * A Method decorator the to map action types with reducer methods.
+ *
+ * @param string[] types The action types that the decorated method should handle
+ * @returns MethodDecorator
+ */
+export declare function actionType(...types: string[]): MethodDecorator;

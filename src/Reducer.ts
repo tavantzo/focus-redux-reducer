@@ -51,6 +51,12 @@ export class ReducerFactory<S = State, A = Action>{
                 return this.updateState(method.call(this, payload, extraParams));
             }
 
+            // Check if there are decorated types
+            if (type in this.decMapToMethods) {
+                const method = this.decMapToMethods[type];
+                return this.updateState(method.call(this, payload, extraParams));
+            }
+
             // Check if there is a default method
             if (hasProto(this, 'default')) {
                 // @ts-ignore: Issue has handled by the check above
@@ -107,10 +113,10 @@ export class ReducerFactory<S = State, A = Action>{
 
     /**
      * Returns a copy of the current state
-     *
-     * @returns object
-     * @memberof ReducerFactory
-     */
+     *å
+        * @returns object
+        * @memberof ReducerFactory
+        */
     currentStateCopy(): State {
         return { ...this.state };
     }
@@ -129,8 +135,28 @@ export class ReducerFactory<S = State, A = Action>{
     }
 }
 
-/* HELPERS */
+const decMapToMethods: {[prop: string]: Function} = {};
+ReducerFactory.prototype.decMapToMethods = decMapToMethods;
 
+/* DECORATORS */
+
+/**
+ * A Method decorator the to map action types with reducer methods.
+ *
+ * @param string[] types The action types that the decorated method should handle
+ * @returns MethodDecorator
+ */
+export function actionType(...types: string[]): MethodDecorator {
+    return <T = ReducerFactory>(target, method: string | symbol, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> => {
+        types.forEach(type => {
+            target.decMapToMethods[type] = target[method].bind(target);
+        });
+
+        return descriptor;
+    }
+}
+
+/* HELPERS */
 const methodExists = (object: ReducerFactory, name: string): boolean => {
     return object.hasOwnProperty(name)
         && typeof object[name] === 'function';
