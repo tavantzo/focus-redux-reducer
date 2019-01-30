@@ -9,6 +9,15 @@
 
 ## Redux reducer focused on productivity
 
+- [focus-redux-reducer](#focus-redux-reducer)
+  - [Redux reducer focused on productivity](#redux-reducer-focused-on-productivity)
+    - [Description](#description)
+    - [Installation](#installation)
+    - [Basic Usage](#basic-usage)
+      - [Example](#example)
+    - [Decorator reference [Experimental]](#decorator-reference-experimental)
+    - [Method reference](#method-reference)
+
 ### Description
 
 A Redux reducer usually is a function (`function(Object state, Object action)`) that updates the state and returns it. Usually the main body of that function is an ugly `switch` statement or even worse a series of an un-maintainable `if...else` statements.
@@ -52,7 +61,7 @@ Also a special `default` method can be defined and will be called when the `acti
 
 **MyReducer.js**
 ```javascript
-import ReducerFactory,{ State, Action } from 'focus-redux-reducer';
+import {ReducerFactory, State, Action } from 'focus-redux-reducer';
 
 class MyReducer extends ReducerFactory {
     // Mapping action types with instance methods
@@ -112,6 +121,43 @@ store.dispatch({
     stuff: {...}
 });
 
+```
+### Decorator reference [Experimental]
+
+**@actionType(...type: string[])**
+<p>Binds an action type with the a method.</p>
+
+**NOTE:** This requires decorators support so the compiler option **experimentalDecorators** in the [tsconfig.json](#example1).
+
+<a name="example1"></a>
+```json
+#tsconfig.js
+{
+    "compilerOptions": {
+        "experimentalDecorators": true
+        ....
+    }
+}
+```
+
+| argument     | type   | description |
+|:--------------|:------|:-----------|
+| ...type | string[] | one or more type to bound with the method |
+
+Example
+```js
+
+import {ReducerFactory, State, Action, action } from 'focus-redux-reducer';
+
+class MyReducer extends ReducerFactory {
+
+    @actionType(SOME_ACTION_TYPE, SOME_OTHE_ACTION_TYPE, ... , SOME_N_ACTION_TYPE)
+    someMethod({foo, bar}) {
+        return {
+            someStateParam: foo+bar
+        }
+    }
+}
 ```
 
 ### Method reference

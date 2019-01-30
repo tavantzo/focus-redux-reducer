@@ -14,7 +14,7 @@ export interface Action<T = string, P = any> extends AnyAction {
 
 /**
  * A base class for create class based reducers where methods are the action.type
- * to avoid the ugly looking switch block. Any reducer class must extemd tha class
+ * to avoid the ugly looking switch block. Any reducer class must extend tha class
  *
  * @export
  * @class ReducerProvider
