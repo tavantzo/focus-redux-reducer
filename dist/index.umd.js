@@ -107,7 +107,7 @@ var __rest = (undefined && undefined.__rest) || function (s, e) {
 var INITIAL_STATE = {};
 /**
  * A base class for create class based reducers where methods are the action.type
- * to avoid the ugly looking switch block. Any reducer class must extemd tha class
+ * to avoid the ugly looking switch block. Any reducer class must extend tha class
  *
  * @export
  * @class ReducerProvider

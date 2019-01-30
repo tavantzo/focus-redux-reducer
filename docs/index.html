@@ -71,6 +71,22 @@
 					<a href="https://www.npmjs.com/package/focus-redux-reducer"><img src="https://img.shields.io/npm/dm/focus-redux-reducer.svg" alt="downloads"></a>
 				<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/npm/l/focus-redux-reducer.svg" alt="MIT License"></a></p>
 				<h2 id="redux-reducer-focused-on-productivity">Redux reducer focused on productivity</h2>
+				<ul>
+					<li><a href="#focus-redux-reducer">focus-redux-reducer</a><ul>
+							<li><a href="#redux-reducer-focused-on-productivity">Redux reducer focused on productivity</a><ul>
+									<li><a href="#description">Description</a></li>
+									<li><a href="#installation">Installation</a></li>
+									<li><a href="#basic-usage">Basic Usage</a><ul>
+											<li><a href="#example">Example</a></li>
+										</ul>
+									</li>
+									<li><a href="#decorator-reference-experimental">Decorator reference [Experimental]</a></li>
+									<li><a href="#method-reference">Method reference</a></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
 				<h3 id="description">Description</h3>
 				<p>A Redux reducer usually is a function (<code>function(Object state, Object action)</code>) that updates the state and returns it. Usually the main body of that function is an ugly <code>switch</code> statement or even worse a series of an un-maintainable <code>if...else</code> statements.</p>
 				<pre><code class="language-javascript"><span class="hljs-keyword">const</span> reducer = <span class="hljs-function">(<span class="hljs-params">state = {}, { type, payload, ...other }</span>) =&gt;</span> {
@@ -99,7 +115,7 @@
 				<p>Also a special <code>default</code> method can be defined and will be called when the <code>action.type</code> matches none of the methods or the mapped methods of the class.</p>
 				<h4 id="example">Example</h4>
 				<p><strong>MyReducer.js</strong></p>
-				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> ReducerFactory,{ State, Action } <span class="hljs-keyword">from</span> <span class="hljs-string">'focus-redux-reducer'</span>;
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> {ReducerFactory, State, Action } <span class="hljs-keyword">from</span> <span class="hljs-string">'focus-redux-reducer'</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyReducer</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ReducerFactory</span> </span>{
     <span class="hljs-comment">// Mapping action types with instance methods</span>
@@ -155,6 +171,45 @@ store.dispatch({
     stuff: {...}
 });
 </code></pre>
+				<h3 id="decorator-reference-experimental-">Decorator reference [Experimental]</h3>
+				<p><strong>@actionType(...type: string[])</strong></p>
+				<p>Binds an action type with the a method.</p>
+				<p><strong>NOTE:</strong> This requires decorators support so the compiler option <strong>experimentalDecorators</strong> in the <a href="#example1">tsconfig.json</a>.</p>
+				<p><a name="example1"></a></p>
+				<pre><code class="language-json">#tsconfig.js
+{
+    &quot;compilerOptions&quot;: {
+        &quot;experimentalDecorators&quot;: true
+        ....
+    }
+}</code></pre>
+				<table>
+					<thead>
+						<tr>
+							<th align="left">argument</th>
+							<th align="left">type</th>
+							<th align="left">description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td align="left">...type</td>
+							<td align="left">string[]</td>
+							<td align="left">one or more type to bound with the method</td>
+						</tr>
+				</tbody></table>
+				<p>Example</p>
+				<pre><code class="language-js">
+<span class="hljs-keyword">import</span> {ReducerFactory, State, Action, action } <span class="hljs-keyword">from</span> <span class="hljs-string">'focus-redux-reducer'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyReducer</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ReducerFactory</span> </span>{
+
+    @actionType(SOME_ACTION_TYPE, SOME_OTHE_ACTION_TYPE, ... , SOME_N_ACTION_TYPE)
+    someMethod({foo, bar}) {
+        <span class="hljs-keyword">return</span> {
+            <span class="hljs-attr">someStateParam</span>: foo+bar
+        }
+    }
+}</code></pre>
 				<h3 id="method-reference">Method reference</h3>
 				<p><strong>ReducerFactory.Create</strong></p>
 				<p>Creates a redux reducer.</p>
