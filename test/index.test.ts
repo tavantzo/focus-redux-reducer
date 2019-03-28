@@ -44,6 +44,10 @@ class TestReducer extends ReducerFactory {
     copyAction(text) {
         return this.currentStateCopy();
     }
+
+    reset(initState) {
+        return this.updateState(initState);
+    }
 }
 
 describe('ReducerBase class tests', function() {
@@ -67,6 +71,7 @@ describe('ReducerBase class tests', function() {
     describe('action dispatching', function() {
         const reducer: Reducer<State, Action> = TestReducer.Create(INITIAL_STATE);
         const store: Store = createStore(reducer);
+        store.dispatch({type: 'reset', payload: INITIAL_STATE});
 
         it('should be able to create a store', function() {
             expect(reducer).to.satisfy(createStore);
@@ -76,7 +81,7 @@ describe('ReducerBase class tests', function() {
             expect(store).not.be.instanceof(Function);
             expect(store).to.be.instanceof(Object);
         });
-        it('should return the same state as the INITIAL_STATE', () => {
+        it('should return the current state', () => {
             store.dispatch({type: '@@INIT'});
             expect(store.getState()).to.be.deep.equal(INITIAL_STATE);
         });
@@ -125,20 +130,10 @@ describe('ReducerBase class tests', function() {
         it('when no action type matched it just returns the current state', () => {
             const reducer2: Reducer<State, Action> = ReducerFactory.Create(INITIAL_STATE);
             const store2: Store = createStore(reducer2);
-            const action: Action = { type: 'UNSUPPORTED', payload: true };
+            const action: Action = { type: 'UNSUPPORTED', payload: false };
+            const currentState = store2.getState();
             store2.dispatch(action);
-            expect(store2.getState()).to.deep.equal(INITIAL_STATE);
-        });
-        it('when store initialize the reducer with empty state', () => {
-            const state = { test: true };
-            const reducer2: Reducer<State, Action> = ReducerFactory.Create(state);
-            const store2: Store = createStore(combineReducers({reducer2}));
-            // @ts-ignore
-            const action: Action = { type: 'whatever', payload: { test: true }};
-            const newState = reducer2(undefined, action);
-            store2.dispatch(action);
-            expect(newState).to.deep.equal(state);
-            expect(store2.getState().reducer2).to.deep.equal(state);
+            expect(store2.getState()).to.deep.equal(currentState);
         });
     });
 });

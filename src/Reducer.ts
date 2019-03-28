@@ -35,6 +35,7 @@ export class ReducerFactory<S = State, A = Action>{
 
         return function(this: ReducerFactory, state: State = {}, action: Action): State {
             const { type, payload, ...extraParams } = action;
+            this.state = state;
 
             if (type === undefined) {
                 return this.state;
