@@ -11,7 +11,7 @@ const INITIAL_STATE: State = {
     decorated: null
 };
 
-class TestReducer extends ReducerFactory {
+class TestReducer extends ReducerFactory<typeof INITIAL_STATE> {
 
     mapActionToMethod() {
         return {

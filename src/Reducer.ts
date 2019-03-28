@@ -1,16 +1,12 @@
 import { AnyAction, Reducer as ReduxReducer } from "redux";
 
-let INITIAL_STATE = {};
+export type State = {[props:string]: any};
 
-export interface State {
-    [props:string]: any;
-}
-
-export interface Action<T = string, P = any> extends AnyAction {
-    type: T;
+export interface PayloadAction<P = any> extends AnyAction {
     payload: P;
-    [extraParams:string]: any;
 }
+
+export type Action = PayloadAction;
 
 /**
  * A base class for create class based reducers where methods are the action.type
@@ -19,10 +15,11 @@ export interface Action<T = string, P = any> extends AnyAction {
  * @export
  * @class ReducerProvider
  */
-export class ReducerFactory<S = State, A = Action>{
+export class ReducerFactory<SS extends State>{
+    private _state: SS = {} as SS;
     [prop: string]: any;
 
-    protected constructor(private state: State) {}
+    protected constructor(private readonly _initialState: SS) {}
 
     /**
      * Returns a Redux reducer compatible function to be attached at a Redux store
@@ -30,15 +27,19 @@ export class ReducerFactory<S = State, A = Action>{
      * @returns function
      * @memberof ReducerFactory
      */
-    static Create(initialState: State): ReduxReducer<State, Action<string, any>> {
-        const reducer: ReducerFactory = new this(initialState);
+    static Create<S = State>(initialState: S): ReduxReducer<S, PayloadAction> {
+        const reducer: ReducerFactory<S> = new this(initialState);
 
-        return function(this: ReducerFactory, state: State = {}, action: Action): State {
+        return function(this: ReducerFactory<S>, currentState, action): S {
             const { type, payload, ...extraParams } = action;
-            this.state = state;
+            if (currentState === undefined) {
+                this._state = this._initialState
+            } else {
+                this._state = currentState;
+            }
 
             if (type === undefined) {
-                return this.state;
+                return this._initialState;
             }
 
             // Check if the object a method that matched the 'type' arguments
@@ -60,7 +61,6 @@ export class ReducerFactory<S = State, A = Action>{
 
             // Check if there is a default method
             if (hasProto(this, 'default')) {
-                // @ts-ignore: Issue has handled by the check above
                 return this.updateState(this.default.call(this, payload, extraParams));
             }
 
@@ -68,6 +68,8 @@ export class ReducerFactory<S = State, A = Action>{
             return this.state;
         }.bind(reducer);
     }
+
+    get state(): SS { return this._state; }
 
     /**
      * The redux initialise hook. This should return the initial state unmodified
@@ -83,7 +85,7 @@ export class ReducerFactory<S = State, A = Action>{
      * @returns object {ACTION_NAME: callable(state = [], payload, extra_params)}
      * @memberof ReducerFactory
      */
-    mapActionToMethod(): State {
+    mapActionToMethod(): {[type: string]: (payload: any, ...extra_params: any[]) => Partial<SS>} {
         return {};
     }
 
@@ -96,8 +98,8 @@ export class ReducerFactory<S = State, A = Action>{
      * @returns object A new state object
      * @memberof ReducerFactory
      */
-    updateStateProp(attribute: string, value: any): State {
-        return this.updateState({ [attribute]: value });
+    updateStateProp(attribute: keyof SS, value: any): SS {
+        return this.updateState({ [attribute]: value } as Partial<SS>);
     }
 
     /**
@@ -107,8 +109,8 @@ export class ReducerFactory<S = State, A = Action>{
      * @returns object The new state
      * @memberof ReducerFactory
      */
-    updateState(newProps: State): State {
-        this.state = { ...this.state, ...newProps };
+    updateState(newProps: Partial<SS>): SS {
+        this._state = Object.assign({}, this.state, newProps);
         return this.state;
     }
 
@@ -118,8 +120,8 @@ export class ReducerFactory<S = State, A = Action>{
         * @returns object
         * @memberof ReducerFactory
         */
-    currentStateCopy(): State {
-        return { ...this.state };
+    currentStateCopy(): SS {
+        return Object.assign({}, this._state);
     }
 
     /**
@@ -130,9 +132,9 @@ export class ReducerFactory<S = State, A = Action>{
      * @returns object A new state object
      * @memberof ReducerFactory
      */
-    removeStateProp(property: string): State {
+    removeStateProp(property: keyof SS): SS {
         delete this.state[property];
-        return { ...this.state, ...INITIAL_STATE };
+        return Object.assign({}, this._state, this._initialState);
     }
 }
 
@@ -147,8 +149,8 @@ ReducerFactory.prototype.decMapToMethods = decMapToMethods;
  * @param string[] types The action types that the decorated method should handle
  * @returns MethodDecorator
  */
-export function actionType(...types: string[]): MethodDecorator {
-    return <T = ReducerFactory>(target, method: string | symbol, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> => {
+export function actionType<S extends State>(...types: string[]): MethodDecorator {
+    return <T = ReducerFactory<S>>(target, method: string | symbol, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> => {
         types.forEach(type => {
             target.decMapToMethods[type] = target[method].bind(target);
         });
@@ -158,12 +160,12 @@ export function actionType(...types: string[]): MethodDecorator {
 }
 
 /* HELPERS */
-const methodExists = (object: ReducerFactory, name: string): boolean => {
+const methodExists = <S extends State>(object: ReducerFactory<S>, name: string): boolean => {
     return object.hasOwnProperty(name)
         && typeof object[name] === 'function';
 };
 
-const hasProto = (object: ReducerFactory, name: string): boolean => {
+const hasProto = <S extends State>(object: ReducerFactory<S>, name: string): boolean => {
     if (typeof name !== 'string' || (name.length === 0)) {
         throw new TypeError('Should `name` to be of type `string` and not empty `value`');
     }
