@@ -40,6 +40,7 @@ var ReducerFactory = /** @class */ (function () {
         return function (state, action) {
             if (state === void 0) { state = {}; }
             var type = action.type, payload = action.payload, extraParams = __rest(action, ["type", "payload"]);
+            this.state = state;
             if (type === undefined) {
                 return this.state;
             }
