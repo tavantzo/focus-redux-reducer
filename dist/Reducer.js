@@ -1,12 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
 var __rest = (this && this.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
@@ -17,17 +9,17 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var INITIAL_STATE = {};
 /**
  * A base class for create class based reducers where methods are the action.type
- * to avoid the ugly looking switch block. Any reducer class must extemd tha class
+ * to avoid the ugly looking switch block. Any reducer class must extend tha class
  *
  * @export
  * @class ReducerProvider
  */
 var ReducerFactory = /** @class */ (function () {
-    function ReducerFactory(state) {
-        this.state = state;
+    function ReducerFactory(_initialState) {
+        this._initialState = _initialState;
+        this._state = {};
     }
     /**
      * Returns a Redux reducer compatible function to be attached at a Redux store
@@ -37,11 +29,16 @@ var ReducerFactory = /** @class */ (function () {
      */
     ReducerFactory.Create = function (initialState) {
         var reducer = new this(initialState);
-        return function (state, action) {
-            if (state === void 0) { state = {}; }
+        return function (currentState, action) {
             var type = action.type, payload = action.payload, extraParams = __rest(action, ["type", "payload"]);
+            if (currentState === undefined) {
+                this._state = this._initialState;
+            }
+            else {
+                this._state = currentState;
+            }
             if (type === undefined) {
-                return this.state;
+                return this._initialState;
             }
             // Check if the object a method that matched the 'type' arguments
             if (hasProto(this, type)) {
@@ -52,15 +49,24 @@ var ReducerFactory = /** @class */ (function () {
                 var method = this.mapActionToMethod()[type];
                 return this.updateState(method.call(this, payload, extraParams));
             }
+            // Check if there are decorated types
+            if (type in this.decMapToMethods) {
+                var method = this.decMapToMethods[type];
+                return this.updateState(method.call(this, payload, extraParams));
+            }
             // Check if there is a default method
             if (hasProto(this, 'default')) {
-                // @ts-ignore: Issue has handled by the check above
                 return this.updateState(this.default.call(this, payload, extraParams));
             }
             // All checks failed, just return the state as is.
             return this.state;
         }.bind(reducer);
     };
+    Object.defineProperty(ReducerFactory.prototype, "state", {
+        get: function () { return this._state; },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * The redux initialise hook. This should return the initial state unmodified
      */
@@ -98,17 +104,17 @@ var ReducerFactory = /** @class */ (function () {
      * @memberof ReducerFactory
      */
     ReducerFactory.prototype.updateState = function (newProps) {
-        this.state = __assign({}, this.state, newProps);
+        this._state = Object.assign({}, this.state, newProps);
         return this.state;
     };
     /**
      * Returns a copy of the current state
-     *
-     * @returns object
-     * @memberof ReducerFactory
-     */
+     *å
+        * @returns object
+        * @memberof ReducerFactory
+        */
     ReducerFactory.prototype.currentStateCopy = function () {
-        return __assign({}, this.state);
+        return Object.assign({}, this._state);
     };
     /**
      * Removes a property from the current state and return a new state.
@@ -120,11 +126,33 @@ var ReducerFactory = /** @class */ (function () {
      */
     ReducerFactory.prototype.removeStateProp = function (property) {
         delete this.state[property];
-        return __assign({}, this.state, INITIAL_STATE);
+        return Object.assign({}, this._state, this._initialState);
     };
     return ReducerFactory;
 }());
 exports.ReducerFactory = ReducerFactory;
+var decMapToMethods = {};
+ReducerFactory.prototype.decMapToMethods = decMapToMethods;
+/* DECORATORS */
+/**
+ * A Method decorator the to map action types with reducer methods.
+ *
+ * @param string[] types The action types that the decorated method should handle
+ * @returns MethodDecorator
+ */
+function actionType() {
+    var types = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        types[_i] = arguments[_i];
+    }
+    return function (target, method, descriptor) {
+        types.forEach(function (type) {
+            target.decMapToMethods[type] = target[method].bind(target);
+        });
+        return descriptor;
+    };
+}
+exports.actionType = actionType;
 /* HELPERS */
 var methodExists = function (object, name) {
     return object.hasOwnProperty(name)

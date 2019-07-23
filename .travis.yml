@@ -1,20 +1,23 @@
 language: node_js
 notifications:
-  email: false
+  email: true
 node_js:
   - '9'
   - '8'
 before_script:
-  - yarn
+  - yarn install
+  - mkdir .nyc_output
+  - chmod go+w .nyc_output
 script:
   - yarn test
   - yarn check-coverage
+before_build:
+  - yarn global add typedoc
+build:
   - yarn build
-after_success:
-  - yarn report-coverage
 branches:
   only:
-    - next
+    - develop
     - master
   except:
     - /^v\d+\.\d+\.\d+$/

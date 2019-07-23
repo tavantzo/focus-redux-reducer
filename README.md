@@ -9,6 +9,15 @@
 
 ## Redux reducer focused on productivity
 
+- [focus-redux-reducer](#focus-redux-reducer)
+  - [Redux reducer focused on productivity](#redux-reducer-focused-on-productivity)
+    - [Description](#description)
+    - [Installation](#installation)
+    - [Basic Usage](#basic-usage)
+      - [Example](#example)
+    - [Decorator reference [Experimental]](#decorator-reference-experimental)
+    - [Method reference](#method-reference)
+
 ### Description
 
 A Redux reducer usually is a function (`function(Object state, Object action)`) that updates the state and returns it. Usually the main body of that function is an ugly `switch` statement or even worse a series of an un-maintainable `if...else` statements.
@@ -29,9 +38,9 @@ const reducer = (state = {}, { type, payload, ...other }) => {
     return state;
 };
 ```
-So when reducers have many actions can easily become un-maintainalbe and confusing, this can be error prone, since developers must rely on eslinter to detect the mess.
+So when reducers have many actions can easily become unmaintainable and confusing, this can be error prone, since developers must rely on es-linter to detect the mess.
 
-Instead of a `switch`, the `Reducer` class, maps the `action.type` with a class method, while it handles the state mutation using the returned object by the method. Also reducers can be re-usable classes.
+Instead of a `switch`, a `ReducerFactory` class, maps the `action.type` with a class method, while it handles the state mutation using the returned object by the method.
 
 ### Installation
 <p>Installation is no different than any other `npm` package. Just execute the command bellow in a terminal, under the root directory of your project</p>
@@ -41,9 +50,10 @@ npm install --save focus-redux-reducer
 ```
 
 ### Basic Usage
-Create a new class that extends the `Reducer` class and add your methods.
+Create a new class that extends the `ReducerFactory` class and add your methods.
 
-Methods can be mapped with a specific `action.type` by overridding the `Reducer.mapActionToMethod` method or the method name could exact match an `action.type`. That method should return an object, containing all the properties that should be updated. Return empty object if none should be updated.
+Methods can be mapped with a specific `action.type` by overriding the `ReducerFactory.mapActionToMethod` method or the method name could exact match an `action.type`. That method should return an object, containing all the properties that should be updated. Return empty object if there the state shouldn't be updated.
+Another way to map an `action.type`with a method is the of the the `forType` decorator
 
 Also a special `default` method can be defined and will be called when the `action.type` matches none of the methods or the mapped methods of the class.
 
@@ -51,7 +61,7 @@ Also a special `default` method can be defined and will be called when the `acti
 
 **MyReducer.js**
 ```javascript
-import ReducerFactory,{ State, Action } from 'focus-redux-reducer';
+import {ReducerFactory, State, Action } from 'focus-redux-reducer';
 
 class MyReducer extends ReducerFactory {
     // Mapping action types with instance methods
@@ -111,6 +121,43 @@ store.dispatch({
     stuff: {...}
 });
 
+```
+### Decorator reference [Experimental]
+
+**@actionType(...type: string[])**
+<p>Binds an action type with the a method.</p>
+
+**NOTE:** This requires decorators support so the compiler option **experimentalDecorators** in the [tsconfig.json](#example1).
+
+<a name="example1"></a>
+```json
+#tsconfig.js
+{
+    "compilerOptions": {
+        "experimentalDecorators": true
+        ....
+    }
+}
+```
+
+| argument     | type   | description |
+|:--------------|:------|:-----------|
+| ...type | string[] | one or more type to bound with the method |
+
+Example
+```js
+
+import {ReducerFactory, State, Action, action } from 'focus-redux-reducer';
+
+class MyReducer extends ReducerFactory {
+
+    @actionType(SOME_ACTION_TYPE, SOME_OTHE_ACTION_TYPE, ... , SOME_N_ACTION_TYPE)
+    someMethod({foo, bar}) {
+        return {
+            someStateParam: foo+bar
+        }
+    }
+}
 ```
 
 ### Method reference
