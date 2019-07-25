@@ -1,10 +1,7 @@
-import { State, Action, ReducerFactory, actionType } from '../src/';
+import { State, Action, ReducerFactory, actionType, PayloadAction } from '../src/';
 import { Reducer, Store, createStore, combineReducers } from 'redux';
 
 import { expect } from 'chai';
-
-const SOME_TYPE = "SOME_TYPE";
-const SOME_OTHER_TYPE = "SOME_OTHER_TYPE";
 
 const INITIAL_STATE: State = {
     fooAction: null,
@@ -28,7 +25,7 @@ class TestReducer extends ReducerFactory<typeof INITIAL_STATE> {
         return state;
     }
 
-    @actionType(SOME_TYPE, SOME_OTHER_TYPE)
+    @actionType<typeof INITIAL_STATE, PayloadAction<"SOME_TYPE", string>>("SOME_TYPE", "SOME_OTHER_TYPE")
     decoratedAction(text) {
         return this.updateStateProp('decorated', text);
     }
@@ -52,7 +49,7 @@ class TestReducer extends ReducerFactory<typeof INITIAL_STATE> {
 
 describe('ReducerBase class tests', function() {
     describe('all', function() {
-        const reducer: Reducer<State, Action> = TestReducer.Create(INITIAL_STATE);
+        const reducer = TestReducer.Create<typeof INITIAL_STATE>(INITIAL_STATE);
 
         it('constructor should return a valid redux reducer.', () => {
             expect(reducer).not.to.be.instanceof(ReducerFactory);
@@ -88,8 +85,8 @@ describe('ReducerBase class tests', function() {
         it("should call decorated methods", () => {
             const payload = "Hello decoratrors"
             const payload2 = "Other decorator";
-            const action: Action  = { type: SOME_TYPE, payload };
-            const action2: Action = { type: SOME_OTHER_TYPE, payload: payload2 };
+            const action: Action  = { type: "SOME_TYPE", payload };
+            const action2: Action = { type: "SOME_OTHER_TYPE", payload: payload2 };
 
             store.dispatch(action);
             expect(store.getState()).not.to.deep.equal(INITIAL_STATE);
