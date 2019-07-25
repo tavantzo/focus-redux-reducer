@@ -1,8 +1,10 @@
 import { AnyAction, Reducer as ReduxReducer } from "redux";
+import { PickByValue } from "utility-types";
 
 export type State = {[props:string]: any};
 
-export interface PayloadAction<P = any> extends AnyAction {
+export interface PayloadAction<T extends string | number | symbol = string, P = any > extends AnyAction {
+    type: T;
     payload: P;
 }
 
@@ -15,7 +17,7 @@ export type Action = PayloadAction;
  * @export
  * @class ReducerProvider
  */
-export class ReducerFactory<SS extends State>{
+export class ReducerFactory<SS extends State, AA extends Action = Action>{
     private _state: SS = {} as SS;
     [prop: string]: any;
 
@@ -27,10 +29,10 @@ export class ReducerFactory<SS extends State>{
      * @returns function
      * @memberof ReducerFactory
      */
-    static Create<S = State>(initialState: S): ReduxReducer<S, PayloadAction> {
-        const reducer: ReducerFactory<S> = new this(initialState);
+    static Create<S = State, A extends Action = Action>(initialState: S): ReduxReducer<S, A> {
+        const reducer: ReducerFactory<S, A> = new this(initialState);
 
-        return function(this: ReducerFactory<S>, currentState, action): S {
+        return function(this: ReducerFactory<S, A>, currentState: S | undefined, action): S {
             const { type, payload, ...extraParams } = action;
             if (currentState === undefined) {
                 this._state = this._initialState
@@ -85,7 +87,7 @@ export class ReducerFactory<SS extends State>{
      * @returns object {ACTION_NAME: callable(state = [], payload, extra_params)}
      * @memberof ReducerFactory
      */
-    mapActionToMethod(): {[type: string]: (payload: any, ...extra_params: any[]) => Partial<SS>} {
+    mapActionToMethod(): Record<Extract<"type", AA>, (p: Pick<AA, "payload">, ...e: any[]) => Partial<SS>> | {}  {
         return {};
     }
 
@@ -149,8 +151,8 @@ ReducerFactory.prototype.decMapToMethods = decMapToMethods;
  * @param string[] types The action types that the decorated method should handle
  * @returns MethodDecorator
  */
-export function actionType<S extends State>(...types: string[]): MethodDecorator {
-    return <T = ReducerFactory<S>>(target, method: string | symbol, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> => {
+export function actionType<S extends State, A extends Action = Action>(...types: string[]): MethodDecorator {
+    return <T = ReducerFactory<S, A>>(target, method: string | symbol, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> => {
         types.forEach(type => {
             target.decMapToMethods[type] = target[method].bind(target);
         });
@@ -160,12 +162,12 @@ export function actionType<S extends State>(...types: string[]): MethodDecorator
 }
 
 /* HELPERS */
-const methodExists = <S extends State>(object: ReducerFactory<S>, name: string): boolean => {
+const methodExists = (object: object, name: string): boolean => {
     return object.hasOwnProperty(name)
         && typeof object[name] === 'function';
 };
 
-const hasProto = <S extends State>(object: ReducerFactory<S>, name: string): boolean => {
+const hasProto = (object: object, name: string): boolean => {
     if (typeof name !== 'string' || (name.length === 0)) {
         throw new TypeError('Should `name` to be of type `string` and not empty `value`');
     }
